@@ -1,0 +1,47 @@
+name: Deploy Monitor API to Cloud Run
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Set up gcloud
+      uses: google-github-actions/setup-gcloud@v1
+      with:
+        service_account_key: ${{ secrets.GCP_SA_KEY }}
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
+        export_default_credentials: true
+
+    - name: Configure Artifact Registry Docker auth
+      run: gcloud auth configure-docker us-central1-docker.pkg.dev
+
+    - name: Build Docker image
+      run: |
+        docker build -t besc-monitor-apiv1 .
+
+    - name: Tag image
+      run: |
+        docker tag besc-monitor-apiv1 \
+        us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/besc-monitor-apiv1/besc-monitor-apiv1:latest
+
+    - name: Push image
+      run: |
+        docker push \
+        us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/besc-monitor-apiv1/besc-monitor-apiv1:latest
+
+    - name: Deploy to Cloud Run
+      run: |
+        gcloud run deploy besc-monitor-apiv1 \
+          --image us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/besc-monitor-apiv1/besc-monitor-apiv1:latest \
+          --region us-central1 \
+          --platform managed \
+          --allow-unauthenticated \
+          --memory 512Mi \
+          --port 8002
