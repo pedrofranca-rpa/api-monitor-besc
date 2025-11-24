@@ -24,24 +24,16 @@ jobs:
 
     - name: Build Docker image
       run: |
-        docker build -t besc-monitor-api .
+        docker build -t besc-monitor-apiv1 .
 
     - name: Tag image
       run: |
         docker tag besc-monitor-api \
-        us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/besc-monitor-api/besc-monitor-api:latest
+        us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/besc-monitor-api/besc-monitor-apiv1:latest
 
     - name: Push image
       run: |
         docker push \
-        us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/besc-monitor-api/besc-monitor-api:latest
+        us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/besc-monitor-api/besc-monitor-apiv1:latest
 
-    - name: Deploy to Cloud Run
-      run: |
-        gcloud run deploy besc-monitor-api \
-          --image us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/besc-monitor-api/besc-monitor-api:latest \
-          --region us-central1 \
-          --platform managed \
-          --allow-unauthenticated \
-          --memory 512Mi \
-          --port 8002
+    
