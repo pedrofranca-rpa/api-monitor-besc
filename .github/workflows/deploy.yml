@@ -29,9 +29,9 @@ jobs:
     - name: Tag image
       run: |
         docker tag besc-monitor-api \
-        us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/docker-images/besc-monitor-api:latest
+        us-central1-docker.pkg.dev/besc-475714/docker-images/besc-monitor-api:latest
 
     - name: Push image
       run: |
         docker push \
-        us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/docker-images/besc-monitor-api:latest
+        us-central1-docker.pkg.dev/besc-475714/docker-images/besc-monitor-api:latest
