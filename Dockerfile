@@ -21,6 +21,6 @@ ENV PYTHONUNBUFFERED=1 \
     PATH="/usr/local/bin:${PATH}"
 
 # EXPOSE é só informativo, Cloud Run ignora, mas pode manter 8002 ou usar 8080
-EXPOSE 8002
 
-CMD ["sh", "-c", "uv run uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8002}"]
+EXPOSE $PORT
+CMD exec uvicorn src.main:app --host 0.0.0.0 --port ${PORT}
