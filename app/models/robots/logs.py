@@ -26,4 +26,4 @@ class RobotLog(Base):
     # Relationships
     steps = relationship("RobotStep", back_populates="logs")
     status = relationship("StatusRobot", back_populates="logs")
-    errors = relationship("RobotError", back_populates="log")
+

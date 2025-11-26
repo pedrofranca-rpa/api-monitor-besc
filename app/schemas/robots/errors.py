@@ -2,16 +2,14 @@
 # Schemas Pydantic para 'robot_errors'.
 
 from pydantic import BaseModel
-from datetime import datetime
 from typing import Optional
 
 
 class RobotErrorCreate(BaseModel):
-    log_id: int
+    step_id: int
     function: Optional[str] = None
     class_excpt: Optional[str] = None
     traceback: Optional[str] = None
-    created_at: datetime
 
 
 class RobotErrorUpdate(BaseModel):
@@ -22,11 +20,10 @@ class RobotErrorUpdate(BaseModel):
 
 class RobotErrorOut(BaseModel):
     id: int
-    log_id: int
+    step_id: int
     function: Optional[str]
     class_excpt: Optional[str]
     traceback: Optional[str]
-    created_at: datetime
 
     class Config:
         from_attributes = True
