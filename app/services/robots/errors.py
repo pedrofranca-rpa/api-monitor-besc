@@ -7,7 +7,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import HTTPException, status
 
 from app.models.robots.errors import RobotError
+from app.models.robots.steps import RobotStep
+
 from app.schemas.robots.errors import RobotErrorCreate, RobotErrorUpdate, RobotErrorOut
+from app.core.status import Status
 
 
 class RobotErrorService:
@@ -19,23 +22,32 @@ class RobotErrorService:
     async def create(db: AsyncSession, data: RobotErrorCreate) -> RobotErrorOut:
         try:
             error = RobotError(**data.model_dump())
+            db_step = await db.get(RobotStep, data.step_id)
+            if not db_step:
+                raise NoResultFound
+
+            error.step_id = db_step.id
+            db_step.status_id = Status.ERROR.value
+            db.add(db_step)
             db.add(error)
+
             await db.commit()
             await db.refresh(error)
+            await db.refresh(db_step)
             return RobotErrorOut.model_validate(error)
 
-        except IntegrityError:
+        except IntegrityError as err:
             await db.rollback()
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Erro ao criar robot_error: violação de integridade.",
+                detail="Erro ao criar robot_error: violação de integridade." + str(err),
             )
 
-        except Exception:
+        except Exception as err:
             await db.rollback()
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Erro interno ao criar robot_error.",
+                detail="Erro interno ao criar robot_error." + str(err),
             )
 
     @staticmethod

@@ -36,18 +36,4 @@ jobs:
           docker push \
             us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/docker-images/besc-monitor-api:latest
 
-      # 🚀 DEPLOY + CLOUD SQL
-      - name: Deploy to Cloud Run
-        run: |
-          gcloud run deploy besc-monitor-api \
-            --image us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/docker-images/besc-monitor-api:latest \
-            --region us-central1 \
-            --platform managed \
-            --port 8002 \
-            --allow-unauthenticated \
-            --memory 512Mi \
-            --timeout 300 \
-            --add-cloudsql-instances ${{ secrets.CLOUDSQL_CONNECTION_NAME }} \
-            --set-env-vars DATABASE_URL=${{ secrets.DATABASE_URL }} \
-            --set-env-vars CLOUDSQL_CONNECTION_NAME=${{ secrets.CLOUDSQL_CONNECTION_NAME }} \
-            --quiet
+      
